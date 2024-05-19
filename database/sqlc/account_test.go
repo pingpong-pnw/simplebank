@@ -23,6 +23,7 @@ func createRandomAccount(t *testing.T) Account {
 	require.Equal(t, createParams.Currency, account.Currency)
 	require.NotZero(t, account.ID)
 	require.NotZero(t, account.CreatedAt)
+	require.True(t, account.CreatedAt.Valid)
 	return account
 }
 
@@ -42,7 +43,19 @@ func TestSelectAccountById(t *testing.T) {
 	require.Equal(t, selectedAccount.CreatedAt, account.CreatedAt)
 }
 
-func TestUpdateAccountAccount(t *testing.T) {
+func TestSelectAccountByIdForUpdate(t *testing.T) {
+	account := createRandomAccount(t)
+	selectedAccount, err := testQuery.SelectAccountByIdForUpdate(context.Background(), account.ID)
+	require.NoError(t, err)
+	require.NotEmpty(t, selectedAccount)
+	require.Equal(t, selectedAccount.ID, account.ID)
+	require.Equal(t, selectedAccount.Owner, account.Owner)
+	require.Equal(t, selectedAccount.Balance, account.Balance)
+	require.Equal(t, selectedAccount.Currency, account.Currency)
+	require.Equal(t, selectedAccount.CreatedAt, account.CreatedAt)
+}
+
+func TestUpdateAccount(t *testing.T) {
 	account := createRandomAccount(t)
 	updateParams := UpdateAccountParams{
 		ID:      account.ID,
